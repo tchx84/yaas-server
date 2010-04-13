@@ -58,12 +58,12 @@ class YaasAgent
     end
 
     def valid_serial_number(serial_number)
-        return true if serial_number.match("^[A-Z]{3}[(0-9)|(A-F)]{8}$")
+        return true if serial_number.upcase.match("^[A-Z]{3}[(0-9)|(A-F)]{8}$")
         false
     end
 
     def valid_uuid(uuid)
-        return true if uuid.match("^[(0-9)|(A-F)]{8}(-[(0-9)|(A-F)]{4}){3}-[(0-9)|(A-F)]{12}$")
+        return true if uuid.upcase.match("^[(0-9)|(A-F)]{8}(-[(0-9)|(A-F)]{4}){3}-[(0-9)|(A-F)]{12}$")
         false
     end
 

@@ -16,10 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 
-require 'lib/yaas_server.rb'
+require "lib/yaas_server.rb"
 
 config_file = ARGV[0]
-config_file = 'etc/default.config' if !config_file
+config_file = "etc/default.config" if !config_file
 
 yaas_server = YaasServer.new(config_file)
 yaas_server.run()

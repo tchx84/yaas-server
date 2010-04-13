@@ -25,22 +25,47 @@ class YaasAgent
     end
 
     def generate_devkeys(hashes_list)
-        devkeys_list = hashes_list.map { |hash|
-            generate_devkey(hash[:serial_number], hash[:uuid])            
+        devkeys_list = []
+
+        hashes_list.each { |hash|
+            if valid_hash(hash)
+                devkey = generate_devkey(hash["serial_number"], hash["uuid"])
+                devkeys_list.push(devkey)
+            end   
         }
 
-        { :devkeys_list => devkeys_list }
+        { "devkeys_list" => devkeys_list }
     end
 
     def generate_leases(hashes_list, duration)
-        leases_list = hashes_list.map { |hash|
-            generate_lease(hash[:serial_number], hash[:uuid], duration)            
+        leases_list = []
+
+        hashes_list.each { |hash|
+            if valid_hash(hash)
+                lease = generate_lease(hash["serial_number"], hash["uuid"], duration)
+                leases_list.push(lease)
+            end
         }
 
-        { :leases_list => leases_list }
+        { "leases_list" => leases_list }
     end
 
     private
+
+    def valid_hash(hash)
+        return true if (valid_serial_number(hash["serial_number"]) and valid_uuid(hash["uuid"]))
+        false
+    end
+
+    def valid_serial_number(serial_number)
+        return true if serial_number.match("^[A-Z]{3}[(0-9)|(A-F)]{8}$")
+        false
+    end
+
+    def valid_uuid(uuid)
+        return true if uuid.match("^[(0-9)|(A-F)]{8}(-[(0-9)|(A-F)]{4}){3}-[(0-9)|(A-F)]{12}$")
+        false
+    end
 
     def generate_devkey(serial_number, uuid)
         cmd_line = "#{@devkey_script_path} #{serial_number} #{uuid}"
@@ -54,7 +79,7 @@ class YaasAgent
 
     def run_cmd(cmd_line)
         IO.popen(cmd_line) do |cmd|
-          cmd.readlines.join("")
+          cmd.readlines.join('')
         end 
     end
 

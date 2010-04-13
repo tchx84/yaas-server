@@ -16,8 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 
-require '../lib/yaas_server.rb'
+require "../lib/yaas_server.rb"
 
-yaas_server = YaasServer.new('../etc/test.config')
+yaas_server = YaasServer.new("../etc/test.config")
 yaas_server.run()
 

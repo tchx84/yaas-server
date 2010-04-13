@@ -16,13 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 
-require 'json'
+require "json"
 require "xmlrpc/client"
-require '../lib/yaas_client.rb'
+require "../lib/yaas_client.rb"
 
-yaas_client = YaasClient.new('localhost', '9090', 'yaas')
-hashes_list = [ {:serial_number => "TCH12345678", :uuid => "9D97000F-9082-4CB2-A8CC-097835906FCB"} ]
-duration = 10
+yaas_client = YaasClient.new("localhost", "9090", "yaas")
+hashes_list = [ {"serial_number" => "TCH12345678", "uuid" => "9D97000F-9082-4CB2-A8CC-097835906FCB"} ]
+duration    = 10
 
 devkeys_list = yaas_client.generate_devkeys(hashes_list)
 puts devkeys_list.to_json

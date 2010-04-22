@@ -39,8 +39,12 @@ class YaasClient
     private
 
     def request_to_server(method, *params)
-       tmp_server = XMLRPC::Client.new(@server_host, nil, @port)
-       tmp_server.call("#{@host_handler}.#{method}", *params)
+       begin
+          tmp_server = XMLRPC::Client.new(@server_host, nil, @port)
+          tmp_server.call("#{@host_handler}.#{method}", *params)
+       rescue SignalException, StandardError
+          {}
+       end
     end
     
 end

@@ -16,11 +16,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 
-require "lib/yaas_server.rb"
+require "logger"
+require File.join(File.dirname(__FILE__), "lib/yaas_server.rb")
 
-config_file = ARGV[0]
-config_file = "etc/default.config" if !config_file
+log_path = File.join(File.dirname(__FILE__), "log/yaas.log")
+logger = Logger.new(log_path)
 
-yaas_server = YaasServer.new(config_file)
-yaas_server.run()
-
+begin
+    config_file = File.join(File.dirname(__FILE__), "etc/yaas.config")
+    yaas_server = YaasServer.new(config_file)
+    yaas_server.run()
+rescue
+    logger.error($!)
+end

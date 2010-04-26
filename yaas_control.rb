@@ -16,8 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 
-require File.join(File.dirname(__FILE__), "../lib/yaas_server.rb")
+require "rubygems"
+require "daemons"
 
-config_file = File.join(File.dirname(__FILE__), "../etc/test.config")
-yaas_server = YaasServer.new(config_file)
-yaas_server.run()
+Daemons.run("yaas.rb")
+

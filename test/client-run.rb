@@ -18,7 +18,7 @@
 
 require "json"
 require "xmlrpc/client"
-require "../lib/yaas_client.rb"
+require File.join(File.dirname(__FILE__), "../lib/yaas_client.rb")
 
 yaas_client = YaasClient.new("localhost", "9090", "yaas")
 hashes_list = [ {"serial_number" => "TCH12345678", "uuid" => "9D97000F-9082-4CB2-A8CC-097835906FCB"} ]

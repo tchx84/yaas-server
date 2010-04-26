@@ -1,0 +1,51 @@
+#!/bin/bash
+# yaas-server  This shell script takes care of starting and stopping yaas-server
+#
+# chkconfig: - 91 24
+# description: Middleware between bios-crypto and web interface
+# pidfile: /opt/yaas-server/yaas.rb.pid
+	
+# Source function library.
+. /etc/init.d/functions
+
+start() {
+	echo "Starting YAAS: "
+  /opt/yaas-server/yaas_control.rb start
+	return 0
+}
+
+stop() {
+	echo "Stopping YAAS: "
+  /opt/yaas-server/yaas_control.rb stop
+	return 0
+}
+
+status() {
+  /opt/yaas-server/yaas_control.rb status
+	return 0
+}
+
+restart() {
+	    stop
+	    start
+}
+
+case "$1" in
+  start)
+  	start
+	;;
+  status)
+  	status
+	;;
+  stop)
+  	stop
+	;;
+  restart|reload)
+  	restart
+	;;
+  *)
+	echo "*** Usage: {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

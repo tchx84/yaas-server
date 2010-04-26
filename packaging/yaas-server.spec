@@ -5,7 +5,7 @@ Vendor: Paraguay Educa
 Summary: Middleware between bios-crypto and web interface
 Group:	Applications/Internet
 License: GPL
-URL: http://git.paraguayeduca.org/gitweb/users/mabente/yaas-web.git
+URL: http://git.paraguayeduca.org/git/users/mabente/yaas-server.git
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 Requires: ruby(abi) = 1.8, rubygems, rubygem-daemons
@@ -25,7 +25,7 @@ mkdir -p $RPM_BUILD_ROOT/opt/%{name}
 cp -r * $RPM_BUILD_ROOT/opt/%{name}
 
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
-cp extra/yaas_server $RPM_BUILD_ROOT/etc/init.d/
+cp extra/yaas-server $RPM_BUILD_ROOT/etc/init.d/
 
 # kill packaging 
 # rm -rf $RPM_BUILD_ROOT/opt/%{name}/packaging

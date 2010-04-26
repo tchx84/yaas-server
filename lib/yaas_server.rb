@@ -16,21 +16,20 @@
 
 # Yet Another Activation System - Server
 
+require 'yaml'
 require "xmlrpc/server"
-require File.join(File.dirname(__FILE__), "config_file.rb")
 require File.join(File.dirname(__FILE__), "yaas_agent.rb")
 
 class YaasServer
 
     def initialize(config_path)
-        config = ConfigFile.new(config_path)
-        config.read_file()
+        config = YAML.load_file(config_path)
 
-        @listen_address     = config.get_key("listen_address")
-        @port               = config.get_key("port")
-        @host_handler       = config.get_key("host_handler")
-        @devkey_script_path = config.get_key("devkey_script_path")
-        @lease_script_path  = config.get_key("lease_script_path")        
+        @listen_address     = config["listen_address"]
+        @port               = config["port"]
+        @host_handler       = config["host_handler"]
+        @devkey_script_path = config["devkey_script_path"]
+        @lease_script_path  = config["lease_script_path"]  
     end
 
     def run

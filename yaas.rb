@@ -25,6 +25,7 @@ logger = Logger.new(log_path)
 begin
     config_file = File.join(File.dirname(__FILE__), "etc/yaas.config")
     yaas_server = YaasServer.new(config_file)
+    yaas_server.switch_user()
     yaas_server.run()
 rescue
     logger.error($!)

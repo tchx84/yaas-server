@@ -2,7 +2,7 @@ Name: yaas-server
 Version: 0.1
 Release: 1
 Vendor: Paraguay Educa
-Summary: Middleware between bios-crypto and web interface
+Summary: Middleware between bios-crypto and yaas web interface
 Group:	Applications/Internet
 License: GPL
 URL: http://git.paraguayeduca.org/git/users/mabente/yaas-server.git
@@ -12,7 +12,7 @@ Requires: ruby(abi) = 1.8, rubygems, rubygem-daemons
 BuildArch: noarch
 
 %description
-This application acts a middleware layer between the bios-crypto and a web interface. This web interface provides a user managed environment for generating leases and developer keys.
+This application acts as a middleware layer between bios-crypto and the yaas web interface.
 
 %prep
 %setup -q
@@ -28,8 +28,8 @@ mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 cp extra/yaas-server $RPM_BUILD_ROOT/etc/init.d/
 
 # kill packaging 
-# rm -rf $RPM_BUILD_ROOT/opt/%{name}/packaging
-# rm -rf $RPM_BUILD_ROOT/opt/%{name}/extra
+rm -rf $RPM_BUILD_ROOT/opt/%{name}/packaging
+rm -rf $RPM_BUILD_ROOT/opt/%{name}/extra
 
 %clean
 rm -rf $RPM_BUILD_ROOT

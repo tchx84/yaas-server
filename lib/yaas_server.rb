@@ -16,6 +16,7 @@
 
 # Yet Another Activation System - Server
 
+require 'etc'
 require 'yaml'
 require "xmlrpc/server"
 require File.join(File.dirname(__FILE__), "yaas_agent.rb")
@@ -29,7 +30,20 @@ class YaasServer
         @port               = config["port"]
         @host_handler       = config["host_handler"]
         @devkey_script_path = config["devkey_script_path"]
-        @lease_script_path  = config["lease_script_path"]  
+        @lease_script_path  = config["lease_script_path"]
+        @system_username    = config["system_username"]
+    end
+
+    def switch_user()
+        user = Etc::getpwnam(@system_username)
+
+        Process::Sys::setegid(user.gid)
+        Process::Sys::setgid(user.gid)
+        Process::Sys::setuid(user.gid)
+
+        if Process::Sys::getuid == 0
+            raise "User #{@system_user} does not exists."
+        end
     end
 
     def run
@@ -41,4 +55,3 @@ class YaasServer
     end
 
 end
-

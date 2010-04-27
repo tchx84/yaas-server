@@ -42,7 +42,7 @@ class YaasServer
         Process::Sys::setuid(user.gid)
 
         if Process::Sys::getuid == 0
-            raise "User #{@system_user} does not exists."
+            raise "You can NOT run this service as root"
         end
     end
 

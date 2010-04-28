@@ -26,12 +26,13 @@ class YaasServer
     def initialize(config_path)
         config = YAML.load_file(config_path)
 
-        @listen_address     = config["listen_address"]
-        @port               = config["port"]
-        @host_handler       = config["host_handler"]
-        @devkey_script_path = config["devkey_script_path"]
-        @lease_script_path  = config["lease_script_path"]
-        @system_username    = config["system_username"]
+        @listen_address       = config["listen_address"]
+        @port                 = config["port"]
+        @host_handler         = config["host_handler"]
+        @devkey_script_path   = config["devkey_script_path"]
+        @lease_script_path    = config["lease_script_path"]
+        @system_username      = config["system_username"]
+        @allowed_ip_addresses = config["allowed_ip_addresses"]
     end
 
     def switch_user()
@@ -47,11 +48,27 @@ class YaasServer
     end
 
     def run
-        handler             = YaasAgent.new(@devkey_script_path, @lease_script_path)
-        server              = XMLRPC::Server.new(@port, @listen_address)
+        handler = YaasAgent.new(@devkey_script_path, @lease_script_path)
+        server  = XMLRPC::Server.new(@port, @listen_address)
 
+        setup_security(server)
         server.add_handler(@host_handler, handler)
         server.serve
+    end
+
+    private
+
+    def setup_security(server)
+
+        if !@allowed_ip_addresses.is_a?(Array)
+            raise "Allowed IP addresses must be an array"
+        end
+
+        if @allowed_ip_addresses.length > 0
+            #Hack for bug related to ruby's xmlrpc/server.rb (supports regexp only)
+            regexp_ip_addresses = @allowed_ip_addresses.map { |address| Regexp.new(address) }
+            server.set_valid_ip(*regexp_ip_addresses)
+        end
     end
 
 end

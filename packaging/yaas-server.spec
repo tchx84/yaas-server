@@ -1,6 +1,6 @@
 Name: yaas-server	
 Version: 0.1
-Release: 1
+Release: 2
 Vendor: Paraguay Educa
 Summary: Middleware between bios-crypto and yaas web interface
 Group:	Applications/Internet
@@ -45,6 +45,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/init.d/
 
 %changelog
+
+* Thu Apr 29 2010 Martin Abente. <mabente@paraguayeduca.org>
+- ssl and secret keyword security
 
 * Mon Apr 26 2010 Martin Abente. <mabente@paraguayeduca.org>
 - Initial version

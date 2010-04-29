@@ -16,24 +16,61 @@
 
 # Yet Another Activation System - Server
 
-require 'etc'
-require 'yaml'
+require "etc"
+require "yaml"
+require "openssl"
+require "webrick"
+require "webrick/https"
 require "xmlrpc/server"
 require File.join(File.dirname(__FILE__), "yaas_agent.rb")
 
 class YaasServer
 
     def initialize(config_path)
-        config = YAML.load_file(config_path)
+        config                = YAML.load_file(config_path)
 
-        @listen_address       = config["listen_address"]
+        @bind_address         = config["bind_address"]
         @port                 = config["port"]
         @host_handler         = config["host_handler"]
         @devkey_script_path   = config["devkey_script_path"]
         @lease_script_path    = config["lease_script_path"]
         @system_username      = config["system_username"]
         @allowed_ip_addresses = config["allowed_ip_addresses"]
+        @private_key_path     = config["private_key_path"]
+        @certificate_path     = config["certificate_path"]
+        @secret_keyword       = config["secret_keyword"]
     end
+
+    def run
+        switch_user()
+
+        private_key_content = File.open(@private_key_path).read
+        private_key         = OpenSSL::PKey::RSA.new(private_key_content)
+
+        certificate_content = File.open(@certificate_path).read
+        certificate         = OpenSSL::X509::Certificate.new(certificate_content)
+
+        handler             = YaasAgent.new(@devkey_script_path, @lease_script_path, @secret_keyword)
+        servlet             = XMLRPC::WEBrickServlet.new
+        server              = WEBrick::HTTPServer.new(
+
+          :Port             => @port,
+          :BindAddress      => @bind_address,
+          :SSLEnable        => true,
+          :SSLVerifyClient  => OpenSSL::SSL::VERIFY_NONE,
+          :SSLCertificate   => certificate,
+          :SSLPrivateKey    => private_key
+        )
+
+        setup_security(servlet)
+        servlet.add_handler(@host_handler, handler)
+        server.mount("/RPC2", servlet)
+
+        trap("INT"){ server.shutdown }
+        server.start
+    end
+
+    private
 
     def switch_user()
         user = Etc::getpwnam(@system_username)
@@ -46,17 +83,6 @@ class YaasServer
             raise "You can NOT run this service as root"
         end
     end
-
-    def run
-        handler = YaasAgent.new(@devkey_script_path, @lease_script_path)
-        server  = XMLRPC::Server.new(@port, @listen_address)
-
-        setup_security(server)
-        server.add_handler(@host_handler, handler)
-        server.serve
-    end
-
-    private
 
     def setup_security(server)
 

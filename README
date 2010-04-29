@@ -1,1 +1,7 @@
 Yet Another Activation System
+
+To create private key and certificate do:
+
+  openssl req -new -x509 -days 9999 -nodes -out pkey-cert.pem -keyout pkey-cert.pem
+
+Both are going to be in the same file.

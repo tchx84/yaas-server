@@ -19,12 +19,14 @@
 
 class YaasAgent
 
-    def initialize(devkey_script_path, lease_script_path)
+    def initialize(devkey_script_path, lease_script_path, secret_keyword)
         @devkey_script_path = devkey_script_path
-        @lease_script_path = lease_script_path
+        @lease_script_path  = lease_script_path
+        @secret_keyword     = secret_keyword
     end
 
-    def generate_devkeys(hashes_list)
+    def generate_devkeys(secret_keyword="", hashes_list={})
+        authsin(secret_keyword)
         devkeys_list = []
 
         hashes_list.each { |hash|
@@ -37,7 +39,8 @@ class YaasAgent
         { "devkeys_list" => devkeys_list }
     end
 
-    def generate_leases(hashes_list, duration)
+    def generate_leases(secret_keyword="", hashes_list={}, duration=0)
+        authsin(secret_keyword)
         leases_list = []
 
         hashes_list.each { |hash|
@@ -51,6 +54,10 @@ class YaasAgent
     end
 
     private
+
+    def authsin(secret_keyword)
+      raise "Alert! Intruders." if @secret_keyword != secret_keyword
+    end
 
     def valid_hash(hash)
         return true if (valid_serial_number(hash["serial_number"]) and valid_uuid(hash["uuid"]))

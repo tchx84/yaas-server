@@ -35,7 +35,6 @@ class YaasServer
         @devkey_script_path   = config["devkey_script_path"]
         @lease_script_path    = config["lease_script_path"]
         @system_username      = config["system_username"]
-        @enable_ip_validation = config["enable_ip_validation"]
         @allowed_ip_addresses = config["allowed_ip_addresses"]
         @private_key_path     = config["private_key_path"]
         @certificate_path     = config["certificate_path"]
@@ -87,20 +86,17 @@ class YaasServer
 
     def setup_security(servlet)
 
-        if @enable_ip_validation
-
-            if !@allowed_ip_addresses.is_a?(Array)
-                raise "Allowed IP addresses must be an array"
-            end
-
-            if @allowed_ip_addresses.length == 0
-                @allowed_ip_addresses.push("127.0.0.1")
-            end
-
-            #Hack for bug related to ruby's xmlrpc/server.rb (supports regexp only)
-            regexp_ip_addresses = @allowed_ip_addresses.map { |address| Regexp.new(address) }
-            servlet.set_valid_ip(*regexp_ip_addresses)
+        if !@allowed_ip_addresses.is_a?(Array)
+            raise "Allowed IP addresses must be an array"
         end
+
+        if @allowed_ip_addresses.length == 0
+            @allowed_ip_addresses.push("127.0.0.1")
+        end
+
+        #Hack for bug related to ruby's xmlrpc/server.rb (supports regexp only)
+        regexp_ip_addresses = @allowed_ip_addresses.map { |address| Regexp.new(address) }
+        servlet.set_valid_ip(*regexp_ip_addresses)
     end
 
 end

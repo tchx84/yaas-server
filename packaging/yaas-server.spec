@@ -1,6 +1,6 @@
 Name: yaas-server	
 Version: 0.1
-Release: 6
+Release: 7
 Vendor: Paraguay Educa
 Summary: Middleware between bios-crypto and yaas web interface
 Group:	Applications/Internet
@@ -46,7 +46,8 @@ chkconfig --level 345 yaas-server off
 %defattr(-,root,root,-)
 %dir /opt/%{name}
 /opt/%{name}/
-/etc/init.d/yaas-server
+%attr(755,root,root) /etc/init.d/yaas-server
+
 
 %changelog
 
@@ -54,6 +55,7 @@ chkconfig --level 345 yaas-server off
 - Packaging fixes
 - Daemon auto start
 - Improvements to ip validation system
+- Force ip validation
 
 * Thu Apr 29 2010 Martin Abente. <mabente@paraguayeduca.org>
 - ssl and secret keyword security

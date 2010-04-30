@@ -85,7 +85,7 @@ class YaasServer
         end
     end
 
-    def setup_security(server)
+    def setup_security(servlet)
 
         if @enable_ip_validation
 
@@ -99,7 +99,7 @@ class YaasServer
 
             #Hack for bug related to ruby's xmlrpc/server.rb (supports regexp only)
             regexp_ip_addresses = @allowed_ip_addresses.map { |address| Regexp.new(address) }
-            server.set_valid_ip(*regexp_ip_addresses)
+            servlet.set_valid_ip(*regexp_ip_addresses)
         end
     end
 

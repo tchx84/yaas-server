@@ -19,5 +19,5 @@
 require "rubygems"
 require "daemons"
 
-Daemons.run("yaas.rb")
-
+yaas_runner = File.join(File.dirname(__FILE__), "yaas.rb")
+Daemons.run(yaas_runner)

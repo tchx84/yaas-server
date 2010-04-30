@@ -4,7 +4,7 @@ To create the private key and certificate:
 
   openssl req -new -x509 -days 9999 -nodes -out pkey-cert.pem -keyout pkey-cert.pem
 
-The private key and the certificate are both in pkey-cert.pem, to
+The private key and the certificate are both in pkey-cert.pem, DO NOT forget to do this:
 
   chown OWNER pkey-cert.pem
   chmod go-rwx pkey-cert.pem

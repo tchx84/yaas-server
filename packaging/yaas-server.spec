@@ -1,6 +1,6 @@
 Name: yaas-server	
 Version: 0.1
-Release: 7
+Release: 8
 Vendor: Paraguay Educa
 Summary: Middleware between bios-crypto and yaas web interface
 Group:	Applications/Internet

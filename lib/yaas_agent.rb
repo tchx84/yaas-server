@@ -75,19 +75,23 @@ class YaasAgent
     end
 
     def generate_devkey(serial_number, uuid)
-        cmd_line = "#{@devkey_script_path} #{serial_number} #{uuid}"
-        run_cmd(cmd_line)
+        params   = "#{serial_number} #{uuid}"
+        run_cmd(@devkey_script_path, params)
     end
 
     def generate_lease(serial_number, uuid, duration)
-        cmd_line = "#{@lease_script_path} #{serial_number} #{uuid} #{duration}"
-        run_cmd(cmd_line)
+        params   = "#{serial_number} #{uuid} #{duration}"
+        run_cmd(@lease_script_path, params)
     end
 
-    def run_cmd(cmd_line)
-        IO.popen(cmd_line) do |cmd|
+    def run_cmd(script_path, params)
+        exec_path = File.dirname(script_path)
+        script_file = File.basename(script_path)
+
+        # I know, I know this hack sucks...
+        IO.popen("cd #{exec_path}; ./#{script_file} #{params}") do |cmd|
           cmd.readlines.join('')
-        end 
+        end
     end
 
 end

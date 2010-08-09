@@ -60,6 +60,10 @@ class YaasAgent
     end
 
     def valid_hash(hash)
+        # for some strange reason, Ruby's regexp checking accepts newlines
+        # outside of the regex match? make sure we get rid of any...
+        hash["serial_number"].strip!
+        hash["uuid"].strip!
         return true if (valid_serial_number(hash["serial_number"]) and valid_uuid(hash["uuid"]))
         false
     end

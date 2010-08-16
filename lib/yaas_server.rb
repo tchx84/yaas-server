@@ -39,6 +39,7 @@ class YaasServer
         @private_key_path     = config["private_key_path"]
         @certificate_path     = config["certificate_path"]
         @secret_keyword       = config["secret_keyword"]
+        @num_threads          = config["num_threads"]
     end
 
     def run
@@ -50,7 +51,7 @@ class YaasServer
         certificate_content = File.open(@certificate_path).read
         certificate         = OpenSSL::X509::Certificate.new(certificate_content)
 
-        handler             = YaasAgent.new(@devkey_script_path, @lease_script_path, @secret_keyword)
+        handler             = YaasAgent.new(@devkey_script_path, @lease_script_path, @secret_keyword, @num_threads)
         servlet             = XMLRPC::WEBrickServlet.new
         server              = WEBrick::HTTPServer.new(
 

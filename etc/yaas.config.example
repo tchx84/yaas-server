@@ -35,3 +35,7 @@ lease_script_path:
 private_key_path:
 certificate_path:
 
+# Number of threads to use when generating keys
+# Suggested value: number_of_cpu_cores+1
+num_threads: 3
+

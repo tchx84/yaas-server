@@ -19,37 +19,40 @@
 
 class YaasAgent
 
-    def initialize(devkey_script_path, lease_script_path, secret_keyword)
+    def initialize(devkey_script_path, lease_script_path, secret_keyword, num_threads)
         @devkey_script_path = devkey_script_path
         @lease_script_path  = lease_script_path
         @secret_keyword     = secret_keyword
+        @num_threads        = num_threads
     end
 
     def generate_devkeys(secret_keyword="", hashes_list={})
         authsin(secret_keyword)
+        exec_list = []
         devkeys_list = []
 
         hashes_list.each { |hash|
             if valid_hash(hash)
-                devkey = generate_devkey(hash["serial_number"], hash["uuid"])
-                devkeys_list.push(devkey)
+                exec_list.push("#{hash["serial_number"]} #{hash["uuid"]}")
             end   
         }
 
+        devkeys_list = do_generate(@devkey_script_path, exec_list)
         { "devkeys_list" => devkeys_list }
     end
 
     def generate_leases(secret_keyword="", hashes_list={}, duration=0)
         authsin(secret_keyword)
+        exec_list = []
         leases_list = []
 
         hashes_list.each { |hash|
             if valid_hash(hash)
-                lease = generate_lease(hash["serial_number"], hash["uuid"], duration)
-                leases_list.push(lease)
+                exec_list.push("#{hash["serial_number"]} #{hash["uuid"]} #{duration}")
             end
         }
 
+        leases_list = do_generate(@lease_script_path, exec_list)
         { "leases_list" => leases_list }
     end
 
@@ -78,24 +81,47 @@ class YaasAgent
         false
     end
 
-    def generate_devkey(serial_number, uuid)
-        params   = "#{serial_number} #{uuid}"
-        run_cmd(@devkey_script_path, params)
+    def run_in_thread(exec_path, script_file, params)
+      fd = IO.popen("cd #{exec_path}; ./#{script_file} #{params}")
+      @procs[fd.pid] = fd
     end
 
-    def generate_lease(serial_number, uuid, duration)
-        params   = "#{serial_number} #{uuid} #{duration}"
-        run_cmd(@lease_script_path, params)
+    def reap()
+      begin
+        pid, status = Process.wait2
+        fd = @procs[pid]
+        @results.push(fd.readlines)
+        fd.close
+        @procs.delete(pid)
+        true
+      rescue Errno::ECHILD
+        false
+      end
     end
 
-    def run_cmd(script_path, params)
-        exec_path = File.dirname(script_path)
-        script_file = File.basename(script_path)
+    def do_generate(script_path, requests)
+      @results = []
+      @procs = Hash.new
+      exec_path = File.dirname(script_path)
+      script_file = File.basename(script_path)
 
-        # I know, I know this hack sucks...
-        IO.popen("cd #{exec_path}; ./#{script_file} #{params}") do |cmd|
-          cmd.readlines.join('')
-        end
+      # seed initial processes
+      for i in 1..@num_threads
+        params = requests.pop
+        break if not params
+        run_in_thread(exec_path, script_file, params)
+      end
+
+      # run a new process for every one that terminates
+      while requests.any?
+        reap()
+        run_in_thread(exec_path, script_file, requests.pop)
+      end
+
+      while reap()
+      end
+
+      @results
     end
 
 end

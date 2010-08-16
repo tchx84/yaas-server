@@ -1,6 +1,6 @@
 Name: yaas-server	
-Version: 0.1
-Release: 9
+Version: 0.2
+Release: 1
 Vendor: Paraguay Educa
 Summary: Middleware between bios-crypto and yaas web interface
 Group:	Applications/Internet
@@ -50,6 +50,9 @@ chkconfig --level 345 yaas-server off
 
 
 %changelog
+
+* Mon Aug 16 2010 Martin Abente. <mabente@paraguayeduca.org>
+- Small fixes and Documentation by Daniel Drake
 
 * Fri Apr 30 2010 Martin Abente. <mabente@paraguayeduca.org>
 - Packaging fixes

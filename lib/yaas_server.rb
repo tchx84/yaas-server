@@ -68,6 +68,8 @@ class YaasServer
         server.mount("/RPC2", servlet)
 
         trap("INT"){ server.shutdown }
+        trap("TERM"){ server.shutdown }
+
         server.start
     end
 

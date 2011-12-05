@@ -27,7 +27,9 @@ cp -r * $RPM_BUILD_ROOT/opt/%{name}
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 cp extra/yaas-server $RPM_BUILD_ROOT/etc/init.d/
 
-# kill packaging 
+# kill for packaging
+rm -rf $RPM_BUILD_ROOT/opt/%{name}/test
+rm -rf $RPM_BUILD_ROOT/opt/%{name}/etc/test.config
 rm -rf $RPM_BUILD_ROOT/opt/%{name}/packaging
 rm -rf $RPM_BUILD_ROOT/opt/%{name}/extra
 

@@ -8,7 +8,7 @@ License: GPL
 URL: http://git.paraguayeduca.org/git/users/mabente/yaas-server.git
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-Requires: ruby(abi) = 1.8, rubygems, rubygem-daemons
+Requires: ruby(abi) = 1.9.1, rubygems, rubygem-daemons
 BuildArch: noarch
 
 %description

@@ -1,0 +1,7 @@
+#!/bin/bash
+mydir=$(readlink -f $(dirname $0))
+ver=$(grep Version: $mydir/yaas-server.spec)
+ver=${ver#Version:}
+ver="${ver#"${ver%%[![:space:]]*}"}"   # remove leading whitespace characters
+git archive --format=tar --prefix=yaas-server-$ver/ HEAD | gzip > $mydir/yaas-server-$ver.tar.gz
+exec rpmbuild --define "_sourcedir $mydir" -ba $mydir/yaas-server.spec

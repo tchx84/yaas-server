@@ -1,0 +1,12 @@
+[Unit]
+Description=yaas OLPC activation server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/yaas-server/yaas.rb
+User=yaas
+Group=yaas
+
+[Install]
+WantedBy=multi-user.target

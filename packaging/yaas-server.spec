@@ -1,5 +1,5 @@
 Name: yaas-server	
-Version: 0.3
+Version: 0.4
 Release: 1
 Vendor: Paraguay Educa
 Summary: Middleware between bios-crypto and yaas web interface
@@ -7,48 +7,64 @@ Group:	Applications/Internet
 License: GPL
 URL: http://git.paraguayeduca.org/git/users/mabente/yaas-server.git
 Source0: %{name}-%{version}.tar.gz
-BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-Requires: ruby(abi) = 1.9.1, rubygems, rubygem-daemons
+Requires: ruby(abi) = 1.9.1, rubygems
 BuildArch: noarch
+
+Requires(pre): shadow-utils
+Requires(post): systemd-units
+Requires(preun): systemd-units
+Requires(postun): systemd-units
 
 %description
 This application acts as a middleware layer between bios-crypto and the yaas web interface.
 
+
 %prep
 %setup -q
 
+
 %build
+
+
 %install
 rm -rf $RPM_BUILD_ROOT
 
-mkdir -p $RPM_BUILD_ROOT/opt/%{name}
-cp -r * $RPM_BUILD_ROOT/opt/%{name}
+install -d $RPM_BUILD_ROOT/opt/%{name}/{etc,lib,log}
+install -m 0755 yaas.rb $RPM_BUILD_ROOT/opt/%{name}
+install -m 0644 lib/yaas*.rb $RPM_BUILD_ROOT/opt/%{name}/lib
+install -m 0644 etc/yaas.config.example $RPM_BUILD_ROOT/opt/%{name}/etc
 
-mkdir -p $RPM_BUILD_ROOT/etc/init.d/
-cp extra/yaas-server $RPM_BUILD_ROOT/etc/init.d/
+install -d $RPM_BUILD_ROOT/%{_unitdir}
+install -m 0644 extra/yaas-server.service $RPM_BUILD_ROOT/%{_unitdir}
 
-# kill for packaging
-rm -rf $RPM_BUILD_ROOT/opt/%{name}/test
-rm -rf $RPM_BUILD_ROOT/opt/%{name}/etc/test.config
-rm -rf $RPM_BUILD_ROOT/opt/%{name}/packaging
-rm -rf $RPM_BUILD_ROOT/opt/%{name}/extra
 
-%clean
-rm -rf $RPM_BUILD_ROOT
+%pre
+getent group yaas >/dev/null || groupadd -r yaas
+getent passwd yaas >/dev/null || \
+	useradd -r -g yaas -s /sbin/nologin \
+		-c "yaas daemon user" yaas
+exit 0
+
 
 %post
-chkconfig --level 345 yaas-server on
+%systemd_post yaas-server.service
+
 
 %preun
-chkconfig --level 345 yaas-server off
+%systemd_preun yaas-server.service
+
 
 %postun
+%systemd_postun_with_restart yaas-server.service
+
 
 %files
-%defattr(-,root,root,-)
 %dir /opt/%{name}
-/opt/%{name}/
-%attr(755,root,root) /etc/init.d/yaas-server
+/opt/%{name}/*.rb
+/opt/%{name}/lib
+/opt/%{name}/etc
+%attr(-, yaas, yaas) /opt/%{name}/log
+%{_unitdir}/*.service
 
 
 %changelog

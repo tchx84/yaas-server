@@ -38,7 +38,6 @@ class YaasServer
         @host_handler         = config["host_handler"]
         @devkey_script_path   = config["devkey_script_path"]
         @lease_script_path    = config["lease_script_path"]
-        @system_username      = config["system_username"]
         @allowed_ip_addresses = config["allowed_ip_addresses"]
         @private_key_path     = config["private_key_path"]
         @certificate_path     = config["certificate_path"]
@@ -47,8 +46,6 @@ class YaasServer
     end
 
     def run
-        switch_user()
-
         private_key_content = File.open(@private_key_path).read
         private_key         = OpenSSL::PKey::RSA.new(private_key_content)
 
@@ -78,18 +75,6 @@ class YaasServer
     end
 
     private
-
-    def switch_user()
-        user = Etc::getpwnam(@system_username)
-
-        Process::Sys::setegid(user.gid)
-        Process::Sys::setgid(user.gid)
-        Process::Sys::setuid(user.gid)
-
-        if Process::Sys::getuid == 0
-            raise "You can NOT run this service as root"
-        end
-    end
 
     def setup_security(servlet)
 

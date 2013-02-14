@@ -29,10 +29,6 @@ host_handler: yaas
 # specified in the yaas-server configuration.
 secret_keyword: 
 
-# The username of the person who will run yaas-server, who must also be
-# the owner of the keys
-system_username: 
-
 # Absolute path of make-devkey.sh from your bios-crypto installation
 devkey_script_path: 
 

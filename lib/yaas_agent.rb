@@ -19,11 +19,12 @@
 
 class YaasAgent
 
-    def initialize(devkey_script_path, lease_script_path, secret_keyword, num_threads)
+    def initialize(devkey_script_path, lease_script_path, secret_keyword, num_threads, logger)
         @devkey_script_path = devkey_script_path
         @lease_script_path  = lease_script_path
         @secret_keyword     = secret_keyword
         @num_threads        = num_threads
+        @logger             = logger
     end
 
     def generate_devkeys(secret_keyword="", hashes_list={})
@@ -82,7 +83,9 @@ class YaasAgent
     end
 
     def run_in_thread(exec_path, script_file, params)
-      fd = IO.popen("cd #{exec_path}; ./#{script_file} #{params}")
+      cmd = "cd #{exec_path}; ./#{script_file} #{params}"
+      fd = IO.popen(cmd)
+      @logger.info("Run #{fd.pid}: #{cmd}")
       @procs[fd.pid] = fd
     end
 
@@ -90,6 +93,11 @@ class YaasAgent
       begin
         pid, status = Process.wait2
         fd = @procs[pid]
+        @logger.error("Reaped pid #{pid} status #{status.exitstatus}")
+        if fd.nil?
+          @logger.error("pid not found in table?")
+          return false
+        end
         @results.push(fd.readlines)
         fd.close
         @procs.delete(pid)

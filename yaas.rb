@@ -26,11 +26,12 @@ require "xmlrpc/server"
 require File.join(File.dirname(__FILE__), "lib/yaas_agent.rb")
 
 log_path = File.join(File.dirname(__FILE__), "log/yaas.log")
-logger = Logger.new(log_path)
+logger = Logger.new(log_path, 5, 2048000)
 
 class YaasServer
 
-    def initialize(config_path)
+    def initialize(logger, config_path)
+        @logger               = logger
         config                = YAML.load_file(config_path)
 
         @bind_address         = config["bind_address"]
@@ -52,7 +53,7 @@ class YaasServer
         certificate_content = File.open(@certificate_path).read
         certificate         = OpenSSL::X509::Certificate.new(certificate_content)
 
-        handler             = YaasAgent.new(@devkey_script_path, @lease_script_path, @secret_keyword, @num_threads)
+        handler             = YaasAgent.new(@devkey_script_path, @lease_script_path, @secret_keyword, @num_threads, @logger)
         servlet             = XMLRPC::WEBrickServlet.new
         server              = WEBrick::HTTPServer.new(
 
@@ -95,7 +96,7 @@ end
 
 begin
     config_file = File.join(File.dirname(__FILE__), "etc/yaas.config")
-    yaas_server = YaasServer.new(config_file)
+    yaas_server = YaasServer.new(logger, config_file)
     yaas_server.run()
 rescue
     logger.error($!)
